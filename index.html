@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Redux</title>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.6.0/redux.min.js"></script>
+	<script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
+</head>
+<body>
+	<h1>Redux</h1>
+
+	<div id="container">
+		<script id="items" type="text/ractive">
+			{{#items:i}}
+				{{i}}
+			{{/items}}
+		</script>
+	</div>
+	<script type="text/javascript">
+		var ADD_ITEM = 'ADD_ITEM';
+		
+		function add_item(data){
+			return {
+				type: 'ADD_ITEM',
+				payload: data
+			}
+		}
+
+		var initialState = {
+			items: []
+		}
+
+		function reducer(state, action){
+			if(typeof state === 'undefined'){
+				return initialState
+			}
+			switch(action.type){
+				case ADD_ITEM:
+					return Object.assign({}, state, {
+						items: [
+							...state.items,
+							{
+								payload: action.payload
+							}
+						]
+					})
+				default:
+					return state
+			}
+		}
+
+		var store = Redux.createStore(reducer);
+		var data = store.getState()
+		var ractive = new Ractive({
+			el: "#container",
+			template: "#items",
+			data:  {payload: data}
+		})
+		var subscribe = store.subscribe(() =>
+		  ractive.set('data', data.items)
+		)
+
+	</script>
+</body>
+</html>
